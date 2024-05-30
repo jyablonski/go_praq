@@ -1,0 +1,15 @@
+name: CI Pipeline
+
+on: [pull_request]
+
+jobs:
+  test_pipeline:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout the Repo
+        uses: actions/checkout@v4
+
+      - name: Run Tests
+        run: |
+          make test
