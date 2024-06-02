@@ -49,6 +49,7 @@ type error interface {
   - They each serve their own purpose but still
 - Doesn't have named parameters?  `d = Add(x=5, y=4)` ????????????????????
 - It will automatically change your code when you save your file to remove things like imports.  this seems nice but wtf
+- Why are dictionaries not a native data type ?
 
 ## Go Programs
 
@@ -174,3 +175,19 @@ Interfaces are a powerful concept that allow you to amke functions that can be u
 The escape character prints a new line after outputting the memory address. We get the pointer (memory address) of something by placing an & character at the beginning of the symbol.
 
 nil is synonymous with null from other programming languages. Errors can be nil because the return type of Withdraw will be error, which is an interface. If you see a function that takes arguments or returns values that are interfaces, they can be nillable.
+
+Maps allow you to store items in a manner similar to a dictionary. You can think of the key as the word and the value as the definition.  basically dictionaries in python
+
+- Created with `dictionary map[string]string` syntax
+
+- Should always create a dictionary like this below and initailize it to empty to avoid running into a runtime error in case it tries to write to a nil map.  both ways do the same thing
+
+``` go
+var dictionary = map[string]string{}
+
+// OR
+
+var dictionary = make(map[string]string)
+```
+
+Testing code that just writes print statements to stdout is pretty difficult.  Dependency Injection is helpful in these scenarios to help test your code and separate your concerns if your functions.
