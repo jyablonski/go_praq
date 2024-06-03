@@ -50,6 +50,16 @@ type error interface {
 - Doesn't have named parameters?  `d = Add(x=5, y=4)` ????????????????????
 - It will automatically change your code when you save your file to remove things like imports.  this seems nice but wtf
 - Why are dictionaries not a native data type ?
+- I don't like how they do documentation.  where is the docstring? why is there like 100 lines of comments amongst 5 lines of simple code, it's just more difficult to read anything when you're just context switching
+
+``` go
+type Server struct {
+	// Addr optionally specifies the TCP address for the server to listen on,
+	// in the form "host:port". If empty, ":http" (port 80) is used.
+	// The service names are defined in RFC 6335 and assigned by IANA.
+	// See net.Dial for details of the address format.
+	Addr string 
+```
 
 ## Go Programs
 
@@ -166,7 +176,25 @@ runtime errors are our enemies because they affect our users.
 
 Structs are a simple type in go that are just a named collection of fields where you can store data
 
-Interfaces are a powerful concept that allow you to amke functions that can be used with different types.
+Interfaces in Go allow you to define sets of method signatures without providing implementations. This enables functions to accept different types as long as they implement the interface.
+
+To implement an interface, a type must provide definitions for all the methods declared in the interface. This makes the type an instance of the interface.
+
+You can write functions that take an interface type as a parameter. These functions can then operate on any concrete type that implements the interface, providing flexibility and promoting decoupled design.
+
+``` go
+type Sleeper interface {
+	Sleep()
+}
+
+type DefaultSleeper struct{}
+
+func (d *DefaultSleeper) Sleep() {
+	time.Sleep(1 * time.Second)
+}
+
+func Countdown(out io.Writer, sleeper Sleeper) {
+```
 
 - Like an `Area()` function for both Rectangle and Circle Structs
 
@@ -191,3 +219,6 @@ var dictionary = make(map[string]string)
 ```
 
 Testing code that just writes print statements to stdout is pretty difficult.  Dependency Injection is helpful in these scenarios to help test your code and separate your concerns if your functions.
+
+In `main.go` we will send to os.Stdout so our users see the countdown printed to the terminal. In tests we will send to bytes.Buffer so our tests can capture what data is being generated.
+

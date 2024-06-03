@@ -31,7 +31,7 @@ func TestColor(t *testing.T) {
 	}
 }
 
-func assertCorrectMessage(t testing.TB, got, want string) {
+func assertCorrectMessage(t testing.TB, got string, want string) {
 	t.Helper()
 	if got != want {
 		t.Errorf("got %q want %q", got, want)
