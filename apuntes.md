@@ -183,17 +183,21 @@ To implement an interface, a type must provide definitions for all the methods d
 You can write functions that take an interface type as a parameter. These functions can then operate on any concrete type that implements the interface, providing flexibility and promoting decoupled design.
 
 ``` go
+// Sleeper interface that defines a single method `Sleep`
 type Sleeper interface {
 	Sleep()
 }
 
+// In Go, it's common to use empty structs when you don't need to store any data but want to define a type to implement an interface.
 type DefaultSleeper struct{}
 
+// This function implements the Sleep Method defined by the Sleepr
 func (d *DefaultSleeper) Sleep() {
 	time.Sleep(1 * time.Second)
 }
 
 func Countdown(out io.Writer, sleeper Sleeper) {
+}
 ```
 
 - Like an `Area()` function for both Rectangle and Circle Structs
@@ -223,6 +227,7 @@ Testing code that just writes print statements to stdout is pretty difficult.  D
 In `main.go` we will send to os.Stdout so our users see the countdown printed to the terminal. In tests we will send to bytes.Buffer so our tests can capture what data is being generated.
 
 
+## Concurrency
 Concurrency means "having more than one thing in progress." This is something that we do naturally everyday.
 
 Normally in Go when we call a function doSomething() we wait for it to return (even if it has no value to return, we still wait for it to finish). We say that this operation is blocking - it makes us wait for it to finish. An operation that does not block in Go will run in a separate process called a goroutine. Think of a process as reading down the page of Go code from top to bottom, going 'inside' each function when it gets called to read what it does. When a separate process starts, it's like another reader begins reading inside the function, leaving the original reader to carry on going down the page.
@@ -241,4 +246,59 @@ This is a race condition, a bug that occurs when the output of our software is d
 
 - `go test -race .`
 
-We can solve this data race by coordinating our goroutines using channels. Channels are a Go data structure that can both receive and send values. These operations, along with their details, allow communication between different processes.
+We can solve this data race by coordinating our goroutines using channels. Channels are a powerful Go data structure that can enable concurrency by using goroutines to communicate with each other and synchronize their execution. These operations, along with their details, allow communication between different processes.
+
+
+## Mocking
+This may or may not make the test pass for you. The problem is we're reaching out to real websites to test our own logic.
+
+Testing code that uses HTTP is so common that Go has tools in the standard library to help you test it.
+
+In the mocking and dependency injection chapters, we covered how ideally we don't want to be relying on external services to test our code because they can be
+
+``` go
+func Racer(a, b string) (winner string) {
+	startA := time.Now()
+	http.Get(a)
+	aDuration := time.Since(startA)
+
+	startB := time.Now()
+	http.Get(b)
+	bDuration := time.Since(startB)
+
+	if aDuration < bDuration {
+		return a
+	}
+
+	return b
+}
+
+```
+
+## Select
+`defer` is used to clean up resources, such as closing a file or in our case closing a server so that it does not continue to listen to a port. Similar to context manager in python.
+
+You want this to execute at the end of the function, but keep the instruction near where you created the server for the benefit of future readers of the code.
+
+Well, a chan struct{} is the smallest data type available from a memory perspective so we get no allocation versus a bool. Since we are closing and not sending anything on the chan, why allocate anything?
+
+`ch := make(chan struct{})`
+
+- Notice how we have to use make when creating a channel; rather than say `var ch chan struct{}`. When you use var the variable will be initialised with the "zero" value of the type. So for string it is "", int it is 0, etc.
+- For channels the zero value is nil and if you try and send to it with <- it will block forever because you cannot send to nil channels
+
+`select` allows you to wait on multiple channels. The first one to send a value "wins" and the code underneath the case is executed.
+
+time.After is a very handy function when using select. Although it didn't happen in our case you can potentially write code that blocks forever if the channels you're listening on never return a value. `time.After` returns a chan (like ping) and will send a signal down it after the amount of time you define.
+
+For us this is perfect; if a or b manage to return they win, but if we get to 10 seconds then our time.After will send a signal and we'll return an error.
+
+
+## Reflection
+You may come across scenarios though where you want to write a function where you don't know the type at compile time. Go lets us get around this with the type interface{} which you can think of as just any type (in fact, in Go any is an alias for interface{}).
+
+- So `walk(x interface{}, fn func(string))` will accept any value for x. This is dangerous though as you lose type safety.
+
+As a writer of such a function, you have to be able to inspect anything that has been passed to you and try and figure out what the type is and what you can do with it. This is done using reflection. This can be quite clumsy and difficult to read and is generally less performant (as you have to do checks at runtime).
+
+- Only use this when you need to.
