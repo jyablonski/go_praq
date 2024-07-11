@@ -302,3 +302,25 @@ You may come across scenarios though where you want to write a function where yo
 As a writer of such a function, you have to be able to inspect anything that has been passed to you and try and figure out what the type is and what you can do with it. This is done using reflection. This can be quite clumsy and difficult to read and is generally less performant (as you have to do checks at runtime).
 
 - Only use this when you need to.
+
+
+## Sync
+
+In Go, a function can be associated with a type using a receiver. The receiver appears between the func keyword and the function name. It allows the function to access the fields and methods of the receiver type.
+
+``` go
+type Counter struct {
+	value int
+}
+
+// c is a pointer of type Counter
+// Since c is a pointer, it directly modifies the original Counter instance.
+func (c *Counter) Inc() {
+	c.value++
+}
+
+func (c *Counter) Value() int {
+	return c.value
+}
+
+```
