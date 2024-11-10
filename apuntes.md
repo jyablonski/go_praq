@@ -176,28 +176,50 @@ runtime errors are our enemies because they affect our users.
 
 Structs are a simple type in go that are just a named collection of fields where you can store data
 
-Interfaces in Go allow you to define sets of method signatures without providing implementations. This enables functions to accept different types as long as they implement the interface.
+Interfaces in Go allow you to define sets of methods without providing how the type implements them. This enables functions to accept different types as long as they implement the interface.
 
 To implement an interface, a type must provide definitions for all the methods declared in the interface. This makes the type an instance of the interface.
 
 You can write functions that take an interface type as a parameter. These functions can then operate on any concrete type that implements the interface, providing flexibility and promoting decoupled design.
 
 ``` go
-// Sleeper interface that defines a single method `Sleep`
-type Sleeper interface {
-	Sleep()
+package main
+
+import "fmt"
+
+// Define an interface named Speaker
+type Speaker interface {
+    Speak() string
 }
 
-// In Go, it's common to use empty structs when you don't need to store any data but want to define a type to implement an interface.
-type DefaultSleeper struct{}
+// Define a struct type 'Dog' that implements the Speaker interface
+type Dog struct{}
 
-// This function implements the Sleep Method defined by the Sleepr
-func (d *DefaultSleeper) Sleep() {
-	time.Sleep(1 * time.Second)
+func (d Dog) Speak() string {
+    return "Woof!"
 }
 
-func Countdown(out io.Writer, sleeper Sleeper) {
+// Define a struct type 'Cat' that also implements the Speaker interface
+type Cat struct{}
+
+func (c Cat) Speak() string {
+    return "Meow!"
 }
+
+// Function that accepts a Speaker interface type
+func MakeAnimalSpeak(s Speaker) {
+    fmt.Println(s.Speak())
+}
+
+func main() {
+    dog := Dog{}
+    cat := Cat{}
+
+    // Both dog and cat satisfy the Speaker interface
+    MakeAnimalSpeak(dog) // Outputs: Woof!
+    MakeAnimalSpeak(cat) // Outputs: Meow!
+}
+
 ```
 
 - Like an `Area()` function for both Rectangle and Circle Structs
@@ -324,3 +346,7 @@ func (c *Counter) Value() int {
 }
 
 ```
+
+## Context
+
+`context` package can be used to help debug performance problems.
