@@ -465,3 +465,82 @@ type error interface {
 }
 
 ```
+
+The errors package makes it easy to deal with errors.
+
+- `errors.New` can be used if you just want to return an error for a specific scenario.
+
+## Loops
+
+Loop syntax in Go `for i := 0; i < numMessages; i++ {} etc...`
+
+While loops don't exist in Go, you just run the for loop while only specifying a condition
+
+
+``` go
+// normal loop
+for i := 0; i < numMessages; i++ {
+	totalCost += 1.0 + (0.01 * float64(i))
+}
+
+// while loop equivalent
+plantHeight := 1
+
+for plantHeight < 5 {
+	fmt.Println("still growing! current height:", plantHeight)
+	plantHeight++
+}
+
+// infinite loop - bad news bears
+cost := 1
+
+for {
+	cost++
+}
+```
+
+## Arrays + Slices
+
+In Go, arrays have a fixed size.
+
+``` go
+// will initialize an array of 10 zeroes
+d := [10]int
+
+// will initialize an array of 3 ints
+f := [3]int{2, 3, 4}
+```
+
+Slices are built on top of arrays, which are dynamically sized and not fixed like Arrays. They're references to what's going on in an Array.
+
+- A function that only has access to a slice can modify the underlying array
+
+``` go
+func getMessageWithRetriesForPlan(plan string) ([]string, error) {
+	allMessages := getMessageWithRetries()
+
+	if plan == planPro {
+		return allMessages[:], nil // this turns an array into a slice just with [:] syntax
+	}
+
+	if plan == planFree {
+		return allMessages[0:2], nil
+	}
+
+	return nil, errors.New("unsupported Plan")
+}
+
+```
+
+
+You can create
+
+
+``` go
+// func make([]Type, length, max_cap)
+// this creates a slice of 5 ints and the underlying array can contain up to 10 ints
+mySlice := make([]int, 5, 10)
+
+// capacity can also be omitted, and in this case it will default to its length
+mySlice := make([]int, 5)
+```
