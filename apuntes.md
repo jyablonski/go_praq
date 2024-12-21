@@ -39,19 +39,6 @@ type error interface {
 }
 ```
 
-
-## What I don't like
-- The forced CamelCase or MixedCaps as they call it
-- The naming convention of Test Files - if it doesn't start with `Test*` then `go test` won't capture it
-  - That said, this does allow for standardization of function names etc.
-- This type of syntax `numbers_divisble_by_3 := []int{}` with the `[]int{}` feels bad and apparently just `[]int` works fine ?
-- Print Statements are just all fucking weird.  there's `Print`, `Println`, `Errorf` like wtf ?  all we're doing is printing some output to stdout
-  - They each serve their own purpose but still
-- Doesn't have named parameters?  `d = Add(x=5, y=4)` ????????????????????
-- It will automatically change your code when you save your file to remove things like imports.  this seems nice but wtf
-- Why are dictionaries not a native data type ?
-- I don't like how they do documentation.  where is the docstring? why is there like 100 lines of comments amongst 5 lines of simple code, it's just more difficult to read anything when you're just context switching
-
 ``` go
 type Server struct {
 	// Addr optionally specifies the TCP address for the server to listen on,
@@ -188,6 +175,7 @@ package main
 import "fmt"
 
 // Define an interface named Speaker
+// Any type implementing the Speak method, which returns a string, satisfies this interface.
 type Speaker interface {
     Speak() string
 }
@@ -350,3 +338,100 @@ func (c *Counter) Value() int {
 ## Context
 
 `context` package can be used to help debug performance problems.
+
+
+## Course 1
+[Link](https://www.boot.dev/courses/learn-golang)
+
+`mySkillIssues := 42` this `:=` syntax is called the Walrus operator to initialize a new variable and assign it a value on the same line
+
+Use named returns when documenting function signatures, they're easier to understand than not using named returns
+
+Anonymous functions are true to form in that they have no name. They're useful when defining a function that will only be used once or to create a quick closure.
+
+The defer keyword is a fairly unique feature of Go. It allows a function to be executed automatically just before its enclosing function returns. The deferred call's arguments are evaluated immediately, but the function call is not executed until the surrounding function returns.
+
+Deferred functions are typically used to clean up resources that are no longer being used. Often to close database connections, file handlers and the like.
+
+Unlike Python, Go is not function-scoped, it's block-scoped. Variables declared inside a block are only accessible within that block (and its nested blocks). There's also the package scope. We'll talk about packages later, but for now, you can think of it as the outermost, nearly global scope.
+
+Structs can be nested to represent more complex entities
+
+
+``` go
+type car struct {
+  brand string
+  model string
+  doors int
+  mileage int
+  frontWheel wheel
+  backWheel wheel
+}
+
+type wheel struct {
+  radius int
+  material string
+}
+
+myCar := car{}
+myCar.frontWheel.radius = 5
+```
+
+In Go, functions that operate on specific types can be written as methods, where the function is associated with a particular type. This is why the functions area and perimeter are written with a receiver instead of starting with just the function name. 
+
+- With methods, you can write `r.area()` instead of `area(r)`, which is cleaner and more concise.
+
+
+``` go
+// function with a receiver
+func area(r rect) float64 {
+	return r.weight * r.height
+}
+
+type shape interface {
+	area() float64
+	perimeter() float64
+}
+
+type rect struct {
+	weight, height float64
+}
+
+// function without a receiver
+func (r rect) area() float64 {
+	return r.weight * r.height
+}
+
+type Clientable interface {
+	ExampleOne(url string) ([]string, error)
+	Exampletwo(image []byte) ([]float32, error)
+}
+
+type Client struct {
+	*example.Client
+}
+```
+
+A type satisfies an interface in Go when it implements all the methods defined by that interface.
+
+The `go.mod` file is the module's manifest for a package. It manages the path, the Go version to use, and all dependencies
+
+The `go.sum` file is an auto-generated file that provides checksums for all the dependencies. It ensures integrity and reproducibility of builds by verifying that the downloaded modules match the checksums.
+
+- Automatically updated by Go tools (go build, go test, go mod tidy, etc.).
+- Should never be manually edited by Developers
+- Ensures the Go project will build reliably across different machines and environments
+
+Use the `make` function when you need to allocate and initialize slices, maps, or channels. It's used specifically for types that require internal allocation and initialization before they can be used,
+
+``` go
+s := make([]int, 5)        // Creates a slice of integers with length 5, initialized with zeros
+s2 := make([]int, 5, 10)   // Creates a slice with length 5 and capacity 10
+
+m := make(map[string]int)  // Creates a map with string keys and int values
+m["age"] = 30              // Add a key-value pair to the map
+
+ch := make(chan int)       // Creates an unbuffered channel of integers
+ch2 := make(chan int, 10)  // Creates a buffered channel with a capacity of 10
+
+```
