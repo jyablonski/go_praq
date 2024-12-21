@@ -383,10 +383,12 @@ In Go, functions that operate on specific types can be written as methods, where
 
 
 ``` go
-// function with a receiver
+// function without a receiver
 func area(r rect) float64 {
 	return r.weight * r.height
 }
+
+// you have to do `my_area = area(rect_obj)`
 
 type shape interface {
 	area() float64
@@ -397,10 +399,12 @@ type rect struct {
 	weight, height float64
 }
 
-// function without a receiver
+// function with a receiver
 func (r rect) area() float64 {
 	return r.weight * r.height
 }
+
+// now you could do `my_area = r.area()`
 
 type Clientable interface {
 	ExampleOne(url string) ([]string, error)
@@ -433,5 +437,31 @@ m["age"] = 30              // Add a key-value pair to the map
 
 ch := make(chan int)       // Creates an unbuffered channel of integers
 ch2 := make(chan int, 10)  // Creates a buffered channel with a capacity of 10
+
+```
+
+
+Interfaces are not classes. They are slimmer. They don't have constructors or deconstructors that require data is created or destroyed. No hierarchical nature to interfaces. They define function signatures, but not underlying behavior.
+
+## Errors
+
+A dangerous function is one that can potentially cause issues such as crashes, undefined behavior. 
+
+- `panic` causes the program to terminate unless recovered. Overusing or misusing it can make your code unpredictable or lead to difficulty in debugging. Safe alternative: Return an error instead of panicking.
+- `os.Exit` immediately terminates the program without calling defer statements, which can lead to resource leaks (e.g., open files or database connections).
+- File/Network Operations Without Proper Cleanup, can lead to resource leaks
+
+In Go you can see right in the function signature if a function can error or not based on if it returns an error or not. Errors are not thrown in Go, they're returned.
+
+``` go
+func getUser(user string) (string, error) {}
+```
+
+Errors are just interfaces. When something goes wrong in a function, that function should return `error` as its last return value. Any code that calls a function that can return an `error` should handle errors by testing whether the error is `nil` or not.
+
+``` go
+type error interface {
+	Error() string
+}
 
 ```

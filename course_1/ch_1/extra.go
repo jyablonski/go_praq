@@ -110,3 +110,20 @@ func (c circle) area() float64 {
 func (c circle) perimeter() float64 {
 	return 2 * 3.14159 * c.radius
 }
+
+type sendable interface {
+	cost() float64
+}
+
+type email struct {
+	body          string
+	is_subscribed bool
+}
+
+func (e email) cost() float64 {
+	body_len := float64(len(e.body))
+	if !e.is_subscribed {
+		return 0.05 * body_len
+	}
+	return 0.01 * body_len
+}
