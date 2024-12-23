@@ -1,11 +1,17 @@
+FROM golang:1.23 AS builder
 
-FROM golang:1.22
+WORKDIR /app
 
-# idk if this works yet chill dawg
-RUN useradd --create-home appuser
-WORKDIR /home/appuser
-USER appuser
+COPY go.mod go.sum ./
+RUN go mod download
 
-COPY ./src ./src
+COPY . ./
 
-CMD ["go", "test", "./src", "-v"]
+RUN go build -o myprogram .
+
+FROM alpine:latest
+
+COPY --from=builder /app/myprogram /app/myprogram
+
+ENTRYPOINT ["/app/myprogram"]
+EXPOSE 8080

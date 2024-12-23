@@ -593,3 +593,130 @@ You can however use a Struct and use it as a Key in a Map.
 If you attempt to access a value from a map where the key doesn't exist, you'll return the zero value for that type. It won't panic or error out.
 
 Functions can change the values inside a Map even if the map is created outside of the function.
+
+A `rune` data type in Go is just a string with len(1)
+
+## Advanced Functions
+
+Dynamically creating functions in function signatures and passing them around as variables can seem like it adds unnecessary complexity, but there are cases where it makes sense
+
+- HTTP API Handlers
+- Pub/Sub Handlers
+- Onclick callbacks
+- Anytime you need to run code at a time in the future, functions as value might make sense
+
+Anonymous functions are ones that have no name, they're often found in closures, currying, or inside higher order functions.
+
+A first class function is a function that can be treated like any other value. `func() int` 
+
+A higher order function is a function that accepts another function as an argument, or returns a function as a return value. `func aggregate(a, b, c int arithmetic func(int, int) int)`
+
+Currying is the practice of writijng a function that takes a function as input, and returns a new function.
+
+- Might be used for a Middleware in an HTTP Handler or something like that
+- Kinda like injecting additional logic into some function
+
+`defer` allows you to execute some function just before the current function exits. This is handy for:
+
+- Closing File connections
+- Closing Database connections
+
+Closures are a function that reference variables from outside its own function body. It may access and assign to the referenced variables.
+
+## Pointers
+
+What do & and * do?
+
+- & operator (address-of operator):
+- It generates a pointer to its operand which gives the memory address of a variable.
+- For example, z := &x means "store the memory address of x in z."
+
+* operator (dereference operator):
+
+- It dereferences a pointer to gain access to the value
+- It allows you to access the value stored at the memory address a pointer is pointing to.
+- For example, a := *z means "get the value stored at the memory address z."
+- The * operator requires a pointer as its operand so it can dereference it (retrieve the value stored at the memory address the pointer is pointing to).
+
+When to use Pointers
+
+- If you want a function to modify the value of a variable, you need to pass a pointer. By default, Go passes arguments by value, meaning changes inside the function won’t affect the original variable unless you use a pointer.
+
+Nil pointers can be dangerous, if a pointer points to nothing then dereferencing it will cause a panic which crashes the program.
+
+
+## Packaging
+
+By convention, a package's naim si the same as the last element of its import path. 
+
+- For example, the `math/rand` package would begin with `package rand`
+- The `mail.io/random` package would begin with `package random`
+
+A directory of Go code can have at most one package. All `.go` files in a difrectory must belong to the same package, or the compiler will throw an error.
+
+- This means you only need to import code if it lives in a different directory or package.
+
+Modules
+
+A Go package is a collection of Go source files that are grouped together in a directory and compiled together. A package typically represents a single unit of functionality.
+
+- A Go package contains Go code that is organized into files with a .go extension.
+- Each file in a package shares the same package name (e.g., package main or package fmt).
+- Packages can be imported by other Go programs to reuse the functionality provided by the package.
+
+A Go module is a collection of Go packages that are versioned together and stored in a specific directory structure. The module system introduced in Go 1.11 allows for versioning of dependencies and provides better management of dependencies.
+
+- A module is a collection of Go files, which can be composed of one or more packages, and it is tied to a version.
+- It is defined by a `go.mod` file in the root of the module directory.
+- Modules help Go handle dependency management.
+- You can specify version numbers of dependencies in go.mod to ensure your code works consistently across environments.
+
+``` go
+module github.com/user/myproject
+
+go 1.18
+
+require (
+    github.com/some/dependency v1.2.3
+)
+```
+
+A Go repository is a version-controlled project (usually hosted on a platform like GitHub, GitLab, etc.) that contains Go code, and it may consist of one or more modules.
+
+- A repository can contain multiple Go modules, and each module may contain multiple packages.
+- The repository typically holds all the source code for a project and its history (commit history).
+- It's a place where your Go code resides, often a Git repository hosted on a code sharing platform.
+
+## Running Go
+
+To run go, you can use the follow commands:
+
+- `go run main.go`
+- `go build`
+
+`go run` will just execute your go code. This can be handy for small files but it's not preferred.
+
+`go build` will build a compiled version of your code that can be executed on any machine, even if Go isn't installed. It's ready-to-go machine code.
+
+- If your directory is `hello_world`, then a binary called `hello_world` will be generated by `go build`. You can run this by running `./hello_world` to run the binary
+- You have to re-compile your code with `go build` if you want changes to appear
+- You can also do `go build && ./hello_world` to compile and run in 1 command
+
+Cross Compilation
+
+- You can specify the OS, the CPU Chipset, and an optional name for the compiled binary like so:
+
+``` sh
+GOOS=darwin GOARCH=arm64 go build -o myprogram-macos-arm64
+GOOS=windows GOARCH=amd64 go build -o myprogram-windows-amd64
+GOOS=linux GOARCH=amd64 go build -o myprogram-linux-amd64
+
+```
+
+When writing functions to be used in other packages, if you want the function to be used outside of that package then you must capitalize it.
+
+If you want to use a function from `github.com/wagslane/mystrings`, you can add it to your import list in the `*.go` file, and then it must be included in your `go.mod` file as a dependency
+
+- It would then be usable in your `*.go` file with `mystrings.Reverse("hello world")`
+
+Don't be exporting code or functions from the `main` package
