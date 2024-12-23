@@ -533,9 +533,6 @@ func getMessageWithRetriesForPlan(plan string) ([]string, error) {
 ```
 
 
-You can create
-
-
 ``` go
 // func make([]Type, length, max_cap)
 // this creates a slice of 5 ints and the underlying array can contain up to 10 ints
@@ -544,3 +541,55 @@ mySlice := make([]int, 5, 10)
 // capacity can also be omitted, and in this case it will default to its length
 mySlice := make([]int, 5)
 ```
+
+Length of a Slice is just how many elements are already allocated. Capacity is the maximum length of the slice before reallocation of the array is necessary
+
+A variadic function can take any arbitary amount of final arguments using the `...` syntax. Similar to kwargs in python ?
+
+`append` is a built in function used to dynamically add elements to a slice.
+
+``` go
+slice = append(slice, oneThing)
+slice = append(slice, firstThing, secondThing)
+slice = append(slice, anotherSlice)
+
+// dont ever do this, you can screw up the slices and weird things can happen
+someSlice = append(otherSlice, element)
+
+// always return the result back to the same slice
+otherSlice = append(otherSlice, element)
+```
+
+Can loop through slices like below:
+
+``` go
+for INDEX, ELEMENT := range SLICE {
+	fmt.Println(INDEX, ELEMENT)
+}
+```
+
+## Maps
+
+Maps in Go are a data structure to hold key-value pairs, similar to dictionaries in Python. You can create them like below:
+
+``` go
+// intialize it first, then add the pairs
+ages := make(map[string]int)
+ages["John"] = 37
+ages["Mary"] = 24
+ages["Mary"] = 21
+
+// or initialize & load it all at once
+ages := map[string]int{
+	"John": 37,
+	"Mary": 21,
+}
+```
+
+Slices, maps, and functions cannot be ucompared for equality with `==` syntax. These are essentially just pointers to memory so they aren't the same ever. For this reason, they cant be used as Map Keys when you adding key value pairs to a map.
+
+You can however use a Struct and use it as a Key in a Map.
+
+If you attempt to access a value from a map where the key doesn't exist, you'll return the zero value for that type. It won't panic or error out.
+
+Functions can change the values inside a Map even if the map is created outside of the function.
