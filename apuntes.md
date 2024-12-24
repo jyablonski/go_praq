@@ -720,3 +720,82 @@ If you want to use a function from `github.com/wagslane/mystrings`, you can add 
 - It would then be usable in your `*.go` file with `mystrings.Reverse("hello world")`
 
 Don't be exporting code or functions from the `main` package
+
+
+## Concurrency & Channels
+
+Sequential code is code that runs in order from top to bottom, 1 thing at a time.
+
+- It's easy to read, easy to debug, and generally is used often
+- However, it's not always the most performant way to run code
+
+Concurrency is the ability to perform multiple tasks at the same time. In programming languages we're able to do this via utilizing the multiple CPU cores available on modern processors.
+
+Concurrency is as simple as using the `go` keyword when calling a function: `go doSomething()`
+
+- This function will be executed concurrently with the rest of the code in the function.
+- The keyword is used to spawn a new goroutine, which is a lightweight thread managed by Go Runtime
+
+Channels are a typed, thread safe queue that allow different goroutines to communicate with each other. Senders send data into the channel, and readers read from the channel. They must be created before use like so:
+
+``` go
+ch := make(chan int)
+
+// put the value of 70 into ch
+ch <- 70
+
+// read the value of 70 into another variable
+input_val := <-ch
+
+// close the channel
+close(ch)
+```
+
+- `<-` is called the channel operator. Data flows in the direction of the operator
+- This operation will block until another goroutine is ready to receive the value
+- Don't send a value on a closed channel because go will panic
+
+A Deadlock is when a group of goroutines are all blocking so none of them can continue. 
+
+Channels can be optionally buffered, where you provide a buffer length as the second argument to `make()`. 
+
+- Sending on a buffered channel only blocks when the buffer is full
+
+You can close channels explicitly but you don't have to, they'll still be garbage collected later on if they're finished being used.
+
+## Mutex
+
+A mutex in Go (short for mutual exclusion) is a synchronization primitive that provides a way to protect shared resources (e.g., variables, data structures) from being accessed by multiple goroutines at the same time. Mutexes ensure that only one goroutine can access the critical section (the code or data protected by the mutex) at any given moment, preventing race conditions.
+
+In Go, mutexes are provided by the sync package as the sync.Mutex type.
+
+
+``` go
+func protected(){
+	mux.Lock()
+	defer mux.Unlock()
+}
+```
+
+Maps are not thread safe in go, so you can't have 2 different goroutines operating on the same map. If at least one of them is writing to the map, you must lock your maps with a mutex.
+
+## Generics
+
+Generics are a programming feature that allows you to write flexible, reusable, and type-safe code. They let you define functions, data structures, or interfaces that can operate on different types without being tied to a specific one, while still ensuring type safety at compile time.
+
+``` go
+type store[P product] interface {
+	Sell(P)
+}
+
+type product interface {
+	Price() float64
+	Name() string
+}
+
+```
+
+- `store` is a generic interface that works with any type P that satisfies the product interface.
+- `product` is the constraint that ensures the type parameter P has the required methods (Price and Name).
+
+You can define a store for any product without tying it to a specific type. For example, you could also define a Fruit type that implements product and reuse the store interface for it.
