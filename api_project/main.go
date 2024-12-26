@@ -14,6 +14,10 @@ import (
 	_ "github.com/lib/pq" // include this code even if we dont use it. need the driver
 )
 
+type apiConfig struct {
+	DB *database.Queries
+}
+
 func main() {
 	godotenv.Load("../.env")
 
@@ -53,6 +57,8 @@ func main() {
 
 	v1Router.Get("/healthz", handlerReadiness)
 	v1Router.Get("/err", handlerErr)
+	v1Router.Post("/users", apiCfg.handlerCreateUser)
+	v1Router.Get("/users", apiCfg.handlerGetUser)
 	router.Mount("/v1", v1Router)
 
 	srv := &http.Server{
@@ -61,9 +67,5 @@ func main() {
 	}
 
 	log.Printf("Server Starting on Port %v", port)
-
-	err := srv.ListenAndServe()
-	if err != nil {
-		log.Fatal(err)
-	}
+	log.Fatal(srv.ListenAndServe())
 }
