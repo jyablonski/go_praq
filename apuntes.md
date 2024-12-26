@@ -816,3 +816,37 @@ SQLC generates `*.go` code for you based on provided `*.sql` files that you crea
 - It relies on the `sqlc.yaml` file to find what sql files it needs and where to dump the Go code
 - The generated Go code shouldn't be manually edited after it's created.
 - Create the Go code w/ `sqlc generate`
+
+# gRPC
+
+gRPC (short for gRPC Remote Procedure Call) is a high-performance, open-source framework developed by Google that allows applications to communicate with each other, often between microservices, in a structured, efficient, and platform-neutral way. It uses Remote Procedure Calls (RPCs) to invoke methods on a remote server as if they were local, simplifying distributed application development.
+
+- Performant Choice
+- Sending JSON data w/ HTTP is expensive because of data marshalling and unmarshalling
+- Uses Protocol Buffers which are a binary serialization format
+- Uses HTTP/2
+- Since Protobuf defines the schema, gRPC ensures type safety, enabling efficient communication and minimizing runtime errors.
+
+Developers write a Protobuf file that describes the service, including its methods and request/response types. You then run a Protobuf Compiler command to generate the client and server stubs in the desired programming language, adn then you can implement the service logic as needed.
+
+Have to install the following:
+
+- [Protocol Buffer Compiler (protoc)](https://grpc.io/docs/protoc-installation/)
+- [Google Go + gRPC Gen Packages](https://grpc.io/docs/languages/go/quickstart/)
+
+``` sh
+
+sudo apt install -y protobuf-compiler
+go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+
+protoc \
+	--proto_path=grpc_project/protobuf "grpc_project/protobuf/orders.proto" \
+	--go_out=grpc_project/services/common/genproto/orders --go_opt=paths=source_relative \
+	--go-grpc_out=grpc_project/services/common/genproto/orders --go-grpc_opt=paths=source_relative
+```
+
+- This command sets the file path to the protobuf/ folder and the specific protobuf file you want to compile Go code for
+- You then specify the `--go_out` and `--go-grpc_out` arguments. Make sure the folder paths are already created
+- Once you run it, it will generate Go code in those 2 file paths based on the Protobuf file you provide
+- Do not change the file in those files
