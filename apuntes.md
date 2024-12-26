@@ -799,3 +799,20 @@ type product interface {
 - `product` is the constraint that ensures the type parameter P has the required methods (Price and Name).
 
 You can define a store for any product without tying it to a specific type. For example, you could also define a Fruit type that implements product and reuse the store interface for it.
+
+## Goose
+
+``` sh
+
+cd sql/schema
+goose postgres postgres://postgres:postgres@localhost:5432/postgres up
+```
+
+
+## SQLC
+
+SQLC generates `*.go` code for you based on provided `*.sql` files that you create to make various queries
+
+- It relies on the `sqlc.yaml` file to find what sql files it needs and where to dump the Go code
+- The generated Go code shouldn't be manually edited after it's created.
+- Create the Go code w/ `sqlc generate`
