@@ -4,6 +4,8 @@ import (
 	"log"
 	"net"
 
+	handler "github.com/jyablonski/go_praq/grpc_project/services/orders/handler/orders"
+	"github.com/jyablonski/go_praq/grpc_project/services/orders/service"
 	"google.golang.org/grpc"
 )
 
@@ -23,6 +25,8 @@ func (s *gRPCServer) Run() error {
 	grpcServer := grpc.NewServer()
 
 	// register our grpc services
+	orderService := service.NewOrderService()
+	handler.NewGrpcOrdersService(grpcServer, orderService)
 	log.Println("Starting gRPC Server on", s.addr)
 	return grpcServer.Serve(lis)
 }

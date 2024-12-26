@@ -850,3 +850,11 @@ protoc \
 - You then specify the `--go_out` and `--go-grpc_out` arguments. Make sure the folder paths are already created
 - Once you run it, it will generate Go code in those 2 file paths based on the Protobuf file you provide
 - Do not change the file in those files
+
+How the Workflow works for a User:
+
+- Users make HTTP Requests to the Kitchen Service to create or view orders.
+- Kitchen Service makes a gRPC call to the Orders Service.
+- Orders Service returns a Protobuf response.
+- Kitchen Service converts the Protobuf response to JSON.
+- Kitchen Service sends the JSON response back to the user.
