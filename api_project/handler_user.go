@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 
@@ -49,7 +50,8 @@ func (apiCfg *apiConfig) handlerGetUser(w http.ResponseWriter, r *http.Request) 
 	user, err := apiCfg.DB.GetUserByAPIKey(r.Context(), apiKey)
 
 	if err != nil {
-		respondWithError(w, 400, fmt.Sprintf("couldn't get user: %v", err))
+		respondWithError(w, http.StatusUnauthorized, "API Key Invalid")
+		log.Printf("Error validating API key: %v\n", err)
 		return
 	}
 
