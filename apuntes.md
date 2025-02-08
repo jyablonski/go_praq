@@ -30,6 +30,31 @@ go test -v
 
 ```
 
+`t *testing.T` is a parameter passed into Go test functions that provides a testing context and allows you manage and report test execution details.
+
+- It enables the use of methods like `t.Errorf()`, `t.Fatalf()`, `t.Helper()` to log test failures or mark certain functions as helper functions such as the assertion functions
+- Go does not provide assertion functions out of the box, so you'll commonly see developers create their own `assertEqual` functions instead to DRY up the testing code
+
+``` go
+package main
+
+import (
+    "testing"
+)
+
+func assertEqual(t *testing.T, got, want int) {
+    if got != want {
+        t.Errorf("got %d, want %d", got, want)
+    }
+}
+
+func TestExample(t *testing.T) {
+    got := 2 + 2
+    want := 4
+    assertEqual(t, got, want)
+}
+```
+
 ## Error Handling
 `error` is a built-in Go interface type to handle error values and indicate an abnormal state.
 
@@ -631,6 +656,10 @@ What do & and * do?
 - It generates a pointer to its operand which gives the memory address of a variable.
 - For example, z := &x means "store the memory address of x in z."
 
+
+- * is used to declare a pointer type or dereference a pointer.
+- & is used to get the memory address of a variable, creating a pointer.
+
 * operator (dereference operator):
 
 - It dereferences a pointer to gain access to the value
@@ -858,3 +887,10 @@ How the Workflow works for a User:
 - Orders Service returns a Protobuf response.
 - Kitchen Service converts the Protobuf response to JSON.
 - Kitchen Service sends the JSON response back to the user.
+
+
+## Test Driven Development
+
+1. Write a failing test
+2. Write just enough code for that test to pass
+3. Refactor
