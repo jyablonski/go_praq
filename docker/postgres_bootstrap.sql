@@ -15,3 +15,16 @@ values (1, 100.00),
        (3, 125.00),
        (4, 66.00),
        (5, 423.00);
+
+CREATE TABLE public.personal_reminders (
+	id serial primary key,
+	reminder varchar NOT NULL,
+	created_at timestamp NOT NULL DEFAULT now(),
+	modified_at timestamp NOT NULL DEFAULT now(),
+	reminder_date date NULL
+);
+
+INSERT INTO public.personal_reminders (reminder, created_at, modified_at, reminder_date)
+VALUES 
+    ('Take out the garbage', now(), now(), current_date),
+    ('Text her back', now(), now(), current_date);

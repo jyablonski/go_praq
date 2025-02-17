@@ -894,3 +894,8 @@ How the Workflow works for a User:
 1. Write a failing test
 2. Write just enough code for that test to pass
 3. Refactor
+
+
+```sh
+go tool cover -func=coverage.out
+```
