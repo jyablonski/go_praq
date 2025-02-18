@@ -895,7 +895,30 @@ How the Workflow works for a User:
 2. Write just enough code for that test to pass
 3. Refactor
 
+## Integration Tests
+
+You can add build tags to your tests in Go so you only run certain tests when you want to. This enables you to split out your integration tests from your units tests to speed up your test process. The following comamnds are used to test either set:
+
+- `go test -v .` will only run your unit tests
+- `go test --tags integration_test -v .` will run both the unit + integration tests
+
+If you don't want to run unit tests when you pass in the `--tags integration_test` option, then you have to manually edit each unit test file and add a negation to tell it to not run along w/ integration tests
+
+- `//go:build !integration_test`
+
+
+## Random
+
 
 ```sh
 go tool cover -func=coverage.out
+```
+
+```
+- uses: actions/setup-go@v5
+with:
+	go-version-file: services/axios-core/go.mod
+	cache-dependency-path: |
+	lib/golang/src/go.sum
+	services/axios-core/go.sum
 ```

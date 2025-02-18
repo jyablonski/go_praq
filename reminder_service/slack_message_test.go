@@ -9,6 +9,7 @@ import (
 )
 
 // Test the sendSlackMessage function
+// add this to line 1 if you want to split test suite up //go:build !integration_test
 func TestSendSlackMessage(t *testing.T) {
 	// Set the required environment variable for testing
 	os.Setenv("WEBHOOK_URL", "http://fake-url")
